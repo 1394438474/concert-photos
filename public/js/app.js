@@ -1,5 +1,25 @@
 // ========== 配置 ==========
-const API_BASE = ''; // 同源，留空即可
+// CloudStudio 部署时自动指向 localtunnel 后端
+const TUNNEL_URL = 'https://concert-photos-xl.loca.lt';
+const isCloudStudio = window.location.hostname.includes('app.codebuddy.work');
+const API_BASE = isCloudStudio ? TUNNEL_URL : '';
+
+// 请求头辅助：CloudStudio 跨域访问 localtunnel 需要绕过安全验证页
+function apiHeaders(extra = {}) {
+  const headers = { ...extra };
+  if (isCloudStudio) {
+    headers['Bypass-Tunnel-Reminder'] = 'true';
+  }
+  return headers;
+}
+
+// 包装 fetch，自动添加 bypass header
+async function apiFetch(url, options = {}) {
+  return fetch(`${API_BASE}${url}`, {
+    ...options,
+    headers: apiHeaders(options.headers || {})
+  });
+}
 
 // ========== DOM 元素 ==========
 const uploadZone = document.getElementById('uploadZone');
@@ -125,6 +145,11 @@ async function handleFiles(fileList) {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `${API_BASE}/api/upload`);
 
+    // CloudStudio 跨域访问 localtunnel 需要绕过安全验证
+    if (isCloudStudio) {
+      xhr.setRequestHeader('Bypass-Tunnel-Reminder', 'true');
+    }
+
     xhr.upload.addEventListener('progress', (e) => {
       if (e.lengthComputable) {
         const percent = Math.round((e.loaded / e.total) * 100);
@@ -164,7 +189,7 @@ async function handleFiles(fileList) {
 
 async function loadFiles() {
   try {
-    const res = await fetch(`${API_BASE}/api/files`);
+    const res = await apiFetch('/api/files');
     const data = await res.json();
     if (data.success) {
       allFiles = data.files;
@@ -438,7 +463,7 @@ lightbox.addEventListener('click', (e) => {
 
 async function deleteFile(name) {
   try {
-    const res = await fetch(`${API_BASE}/api/files/${encodeURIComponent(name)}`, {
+    const res = await apiFetch(`/api/files/${encodeURIComponent(name)}`, {
       method: 'DELETE'
     });
     const data = await res.json();
@@ -462,7 +487,7 @@ checkDriveStatus();
 
 async function checkDriveStatus() {
   try {
-    const res = await fetch(`${API_BASE}/aliyundrive/status`);
+    const res = await apiFetch('/aliyundrive/status');
     const data = await res.json();
     const btn = document.getElementById('cloudDriveBtn');
     const icon = document.getElementById('driveStatusIcon');
@@ -510,7 +535,7 @@ async function connectDrive() {
   btn.textContent = '连接中...';
   btn.disabled = true;
   try {
-    const res = await fetch(`${API_BASE}/aliyundrive/connect`, {
+    const res = await apiFetch('/aliyundrive/connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token })
@@ -536,7 +561,7 @@ function showDriveConnected() {
 
 async function createShareLink() {
   try {
-    const res = await fetch(`${API_BASE}/aliyundrive/share`, {
+    const res = await apiFetch('/aliyundrive/share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -558,7 +583,7 @@ async function createShareLink() {
 
 async function disconnectDrive() {
   try {
-    const res = await fetch(`${API_BASE}/aliyundrive/disconnect`, {
+    const res = await apiFetch('/aliyundrive/disconnect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -581,7 +606,7 @@ async function disconnectDrive() {
 // 为文件设置分类
 async function setFileCategory(filename, categoryId) {
   try {
-    const res = await fetch(`${API_BASE}/api/files/${encodeURIComponent(filename)}/category`, {
+    const res = await apiFetch(`/api/files/${encodeURIComponent(filename)}/category`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ categoryId: categoryId || null })
@@ -617,7 +642,7 @@ document.getElementById('catManagerOverlay').addEventListener('click', (e) => {
 // 刷新分类管理器内容
 async function refreshCatManager() {
   try {
-    const res = await fetch(`${API_BASE}/api/categories`);
+    const res = await apiFetch('/api/categories');
     const data = await res.json();
     if (!data.success) return;
     
@@ -650,7 +675,7 @@ document.getElementById('addCatBtn').addEventListener('click', async () => {
   const color = document.getElementById('newCatColor').value;
   
   try {
-    const res = await fetch(`${API_BASE}/api/categories`, {
+    const res = await apiFetch('/api/categories', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, color })
@@ -682,7 +707,7 @@ async function deleteCategory(catId) {
   if (!confirm(confirmMsg)) return;
   
   try {
-    const res = await fetch(`${API_BASE}/api/categories/${catId}`, {
+    const res = await apiFetch(`/api/categories/${catId}`, {
       method: 'DELETE'
     });
     const data = await res.json();
@@ -702,3 +727,29 @@ async function deleteCategory(catId) {
 document.getElementById('newCatName').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('addCatBtn').click();
 });
+
+// ========== 微信浏览器检测 ==========
+function isWeChat() {
+  return /MicroMessenger/i.test(navigator.userAgent);
+}
+
+if (isWeChat()) {
+  // 微信内置浏览器无法通过 localtunnel 安全验证页，显示引导
+  document.getElementById('wechatGuide').classList.add('show');
+  // 隐藏正常页面内容
+  document.querySelector('.header').style.display = 'none';
+  document.querySelector('.main').style.display = 'none';
+}
+
+// 复制当前页面链接
+function copyPageUrl() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    document.getElementById('copyFeedback').textContent = '✅ 链接已复制！请粘贴到手机浏览器地址栏打开';
+    setTimeout(() => {
+      document.getElementById('copyFeedback').textContent = '';
+    }, 3000);
+  }).catch(() => {
+    document.getElementById('copyFeedback').textContent = '链接：' + url;
+  });
+}

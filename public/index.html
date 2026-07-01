@@ -190,5 +190,31 @@
   </footer>
 
   <script src="/js/app.js"></script>
+
+  <!-- 微信浏览器引导层 -->
+  <div id="wechatGuide" style="display:none;">
+    <div class="wechat-guide-bg"></div>
+    <div class="wechat-guide-card">
+      <div class="wechat-guide-icon">📱→🌐</div>
+      <h2 class="wechat-guide-title">请在浏览器中打开</h2>
+      <p class="wechat-guide-desc">微信内置浏览器无法正常访问此页面，请按以下步骤操作：</p>
+      <div class="wechat-guide-steps">
+        <div class="wechat-step">
+          <span class="wechat-step-num">1</span>
+          <span>点击右上角 <strong>···</strong> 按钮</span>
+        </div>
+        <div class="wechat-step">
+          <span class="wechat-step-num">2</span>
+          <span>选择 <strong>在浏览器中打开</strong></span>
+        </div>
+        <div class="wechat-step">
+          <span class="wechat-step-num">3</span>
+          <span>即可正常使用上传和浏览功能</span>
+        </div>
+      </div>
+      <button class="wechat-guide-btn" onclick="copyPageUrl()">📋 复制链接到浏览器</button>
+      <p class="wechat-guide-tip" id="copyFeedback"></p>
+    </div>
+  </div>
 </body>
 </html>
