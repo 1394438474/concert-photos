@@ -42,11 +42,13 @@
           <span class="stat-label">总大小</span>
         </div>
       </div>
-      <!-- 阿里云盘状态按钮 -->
-      <button class="cloud-drive-btn" id="cloudDriveBtn" onclick="toggleDrivePanel()">
-        <span id="driveStatusIcon">☁️</span>
-        <span id="driveStatusText">阿里云盘</span>
-      </button>
+      <!-- 管理员入口：仅 ?admin 参数可见 -->
+      <div id="adminArea" style="display:none;">
+        <button class="cloud-drive-btn" id="cloudDriveBtn" onclick="toggleDrivePanel()">
+          <span id="driveStatusIcon">☁️</span>
+          <span id="driveStatusText">阿里云盘</span>
+        </button>
+      </div>
     </div>
   </header>
 

@@ -4,6 +4,9 @@ const TUNNEL_URL = 'https://concert-photos-xl.loca.lt';
 const isCloudStudio = window.location.hostname.includes('app.codebuddy.work');
 const API_BASE = isCloudStudio ? TUNNEL_URL : '';
 
+// 管理员模式：URL 带 ?admin 参数
+const isAdmin = new URLSearchParams(window.location.search).has('admin');
+
 // 请求头辅助：CloudStudio 跨域访问 localtunnel 需要绕过安全验证页
 function apiHeaders(extra = {}) {
   const headers = { ...extra };
@@ -481,7 +484,12 @@ async function deleteFile(name) {
 // ========== 初始化 ==========
 
 loadFiles();
-checkDriveStatus();
+
+// 管理��模式：显示云盘入口
+if (isAdmin) {
+  document.getElementById('adminArea').style.display = 'block';
+  checkDriveStatus();
+}
 
 // ========== 阿里云盘对接 ==========
 
