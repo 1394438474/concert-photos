@@ -1,0 +1,24 @@
+{
+  "name": "concert-memory-collector",
+  "version": "1.0.0",
+  "description": "演唱会照片视频收集网站",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "prod": "pm2 start ecosystem.config.js",
+    "stop": "pm2 stop concert-memory",
+    "restart": "pm2 restart concert-memory",
+    "logs": "pm2 logs concert-memory"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "elliptic": "^6.6.1",
+    "express": "^4.19.2",
+    "localtunnel": "^2.0.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "pm2": "^5.4.3"
+  }
+}

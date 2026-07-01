@@ -1,0 +1,9 @@
+node_modules/
+public/uploads/
+data/
+aliyundrive_tokens.json
+*.log
+.DS_Store
+.workbuddy/
+public_cloudstudio/
+
