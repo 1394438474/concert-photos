@@ -42,61 +42,8 @@
           <span class="stat-label">总大小</span>
         </div>
       </div>
-      <!-- 阿里云盘状态按钮 -->
-      <button class="cloud-drive-btn" id="cloudDriveBtn" onclick="toggleDrivePanel()">
-        <span id="driveStatusIcon">☁️</span>
-        <span id="driveStatusText">阿里云盘</span>
-      </button>
     </div>
   </header>
-
-  <!-- 阿里云盘设置面板 -->
-  <div class="drive-panel" id="drivePanel" style="display:none;">
-    <div class="drive-panel-inner">
-      <h3 class="drive-panel-title">☁️ 阿里云盘对接</h3>
-      <p class="drive-panel-desc">上传的文件会自动同步到你的阿里云盘，方便永久保存和分享</p>
-
-      <!-- 未连接：输入 Token -->
-      <div id="driveConnectArea">
-        <div class="drive-tutorial">
-          <p class="drive-tutorial-title">📋 获取 Token 只需 3 步：</p>
-          <div class="drive-tutorial-step">
-            <span class="step-badge">1</span>
-            <span>浏览器打开 <a href="https://www.alipan.com" target="_blank">www.alipan.com</a> 并登录你的阿里云盘账号</span>
-          </div>
-          <div class="drive-tutorial-step">
-            <span class="step-badge">2</span>
-            <span>按 <kbd>F12</kbd> 打开开发者工具，点顶部 <kbd>Console</kbd>（控制台）标签</span>
-          </div>
-          <div class="drive-tutorial-step">
-            <span class="step-badge">3</span>
-            <span>粘贴这行代码并回车，复制结果：</span>
-          </div>
-          <div class="code-block" onclick="copyCode(this)">
-            <code>JSON.parse(localStorage.token).refresh_token</code>
-            <span class="copy-hint">点击复制</span>
-          </div>
-        </div>
-        <input type="text" id="refreshTokenInput" placeholder="把获取到的 Refresh Token 粘贴到这里" class="drive-input">
-        <button class="drive-btn" onclick="connectDrive()">连接阿里云盘</button>
-      </div>
-
-      <!-- 已连接状态 -->
-      <div class="drive-connected" id="driveConnected" style="display:none;">
-        <p class="drive-connected-icon">✅ 阿里云盘已连接</p>
-        <p class="drive-connected-desc">上传的文件将自动同步到阿里云盘「演唱会记忆收集站」文件夹</p>
-        <div class="drive-connected-actions">
-          <button class="drive-btn drive-btn-share" onclick="createShareLink()">🔗 创建分享链接</button>
-          <button class="drive-btn drive-btn-disconnect" onclick="disconnectDrive()">断开连接</button>
-        </div>
-        <div id="shareResult" style="display:none;" class="share-result">
-          <p>分享链接：</p>
-          <a id="shareLink" href="" target="_blank" class="share-link-text"></a>
-          <p id="sharePwd" class="share-pwd"></p>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- 主内容区 -->
   <main class="main">
@@ -112,7 +59,7 @@
         </div>
         <h2 class="upload-title">拖拽照片/视频到这里</h2>
         <p class="upload-hint">或者 <span class="upload-link">点击选择文件</span></p>
-        <p class="upload-formats">支持 JPG / PNG / GIF / WEBP / MP4 / MOV / WEBM 等格式，单个文件最大 10GB</p>
+        <p class="upload-formats">支持 JPG / PNG / GIF / WEBP / MP4 / MOV / WEBM 等格式，单个文件最大 100MB</p>
         <input type="file" id="fileInput" multiple accept="image/*,video/*" hidden>
       </div>
       <!-- 上传进度 -->

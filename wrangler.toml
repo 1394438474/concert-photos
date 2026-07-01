@@ -1,0 +1,14 @@
+name = "concert-photos"
+compatibility_date = "2025-07-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "public"
+
+# R2 存储桶 — 用户上传的照片和视频
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "concert-photos-files"
+
+# KV 命名空间 — 分类、文件元数据
+[[kv_namespaces]]
+binding = "META"
+id = "PLACEHOLDER_KV_ID"
